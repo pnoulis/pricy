@@ -1,4 +1,4 @@
-# Portrai
+# Pricy
 
 Consumer product tracking (focusing on computer-related hardware) and
 notification system.
