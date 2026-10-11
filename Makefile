@@ -1,0 +1,68 @@
+#!/usr/bin/env make
+
+# Make configuration
+SHELL							= /usr/bin/bash
+.DEFAULT_GOAL: all
+.DELETE_ON_ERROR:
+
+# Metadata
+export APPID			= portrai
+
+# Build environment
+export SRCDIR_TOP	= .
+export SRCDIR			= $(SRCDIR_TOP)/src
+
+# Installation directories
+export BUILDIR		= $(SRCDIR_TOP)/build
+
+# Utilites
+MKDIR_P						= /usr/bin/mkdir -p
+ECMA_VERSION			= es2026
+NODE_VERSION			= 26.11.1
+NODE_VVERSION			= v$(NODE_VERSION)
+NVM_BIN						= $(HOME)/.nvm/versions/node/$(NODE_VVERSION)/bin
+NPX 							= $(NVM_BIN)/npx
+NODE							= $(NPX) node
+ESBUILD 					= $(NPX) esbuild
+PRETTIER					= $(NPX) prettier
+ESLINT						= $(NPX) eslint
+NODEMON						= $(NPX) nodemon
+SERVER						= $(NPX) http-server
+
+.PHONY: all
+all: build
+
+.PHONY: build
+build: $(BUILDIR)/index.html
+
+$(BUILDIR)/index.html: $(SRCDIR)/index.html | $(BUILDIR)/
+	cp $< $@
+
+$(BUILDIR)/:
+	$(MKDIR_P) $@
+
+.PHONY: watch
+watch:
+	make serve &
+	$(NODEMON) --watch $(SRCDIR) -e html,js,css --exec 'make build'
+
+.PHONY: serve
+serve: build
+	$(SERVER) --gzip -c-1 $(BUILDIR)
+
+.PHONY: format
+format:
+	git diff --cached --name-only | while read -r file; do \
+		case "$$file" in \
+			*.json|*.js|*.ts|*.tsx|*.jsx|*.html|*.css|*.mjs|*.cjs) \
+			[[ -f "$$file" ]] && $(PRETTIER) --config prettier.config.mjs --write "$$file"; \
+		esac; done
+
+.PHONY: lint
+ARGS ?= # --fix
+lint:
+	git diff --cached --name-only | while read -r file; do \
+		case "$$file" in \
+			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html) \
+				[[ -f "$$file" ]] && $(ESLINT) --config eslint.config.mjs $(ARGS) "$$file" ;; \
+		esac; done
