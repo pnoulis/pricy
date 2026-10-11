@@ -1,6 +1,7 @@
 # Portrai
 
-Track a consumer product and set notification markers when criteria are met.
+Consumer product tracking (focusing on computer-related hardware) and
+notification system.
 
 ## Planned Features & Roadmap
 
@@ -14,7 +15,7 @@ Track a consumer product and set notification markers when criteria are met.
 
 ### Set criteria for notifications
 
-- [ ] Notify when price exceeds or drops below marker
+- [ ] Notify when price exceeds or drops below threshold
 
 ## Getting started
 
