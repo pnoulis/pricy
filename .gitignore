@@ -5,3 +5,4 @@ package-lock.json
 # artifacts
 /build/
 /tmp/
+/snapshots/
