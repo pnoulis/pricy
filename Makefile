@@ -64,7 +64,7 @@ check:
 
 .PHONY: format
 format:
-	git diff --cached --name-only | while read -r file; do \
+	git diff --cached --name-only --diff-filter=d | while read -r file; do \
 		case "$$file" in \
 			*.json|*.js|*.ts|*.tsx|*.jsx|*.html|*.css|*.mjs|*.cjs) \
 			if [[ -f "$$file" ]]; then \
@@ -76,8 +76,8 @@ format:
 .PHONY: lint
 ARGS ?= # --fix
 lint:
-	git diff --cached --name-only | while read -r file; do \
+	git diff --cached --name-only --diff-filter=d | while read -r file; do \
 		case "$$file" in \
 			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html|*.mts|*.cts) \
-				[[ -f "$$file" ]] && $(ESLINT) --config eslint.config.mjs $(ARGS) "$$file" ;; \
+				[[ -f "$$file" ]] && $(ESLINT) --config eslint.config.mjs $(ARGS) "$$file"; \
 		esac; done
