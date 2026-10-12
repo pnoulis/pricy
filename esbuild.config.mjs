@@ -10,5 +10,15 @@ Esbuild.build({
   platform: "node",
   format: "esm",
   packages: "external",
-  sourcemap: true,
+  sourcemap: false,
+});
+
+Esbuild.build({
+  entryPoints: ["src/providers/telekom.ts"],
+  outdir: Path.join(BUILDIR, "providers/"),
+  platform: "node",
+  format: "esm",
+  packages: "external",
+  bundle: true,
+  sourcemap: false,
 });

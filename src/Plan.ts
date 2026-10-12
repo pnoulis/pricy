@@ -1,4 +1,4 @@
-import type { TSector } from "./Provider.js";
+import type { TSector } from "./Provider.ts";
 
 export const CustomerSegment = {
   Consumer: "CONSUMER",
@@ -74,8 +74,8 @@ export type TTerminationCharge = {
 };
 
 export type TBasePlan = {
-  id: string;
-  providerId: string;
+  id: number;
+  providerId: number;
   sector: TSector;
   segment: TCustomerSegment;
   paymentModel: TPaymentModel;
@@ -85,15 +85,15 @@ export type TBasePlan = {
 };
 
 export type TPlanVariant = {
-  id: string;
-  basePlanId: string;
+  id: number;
+  basePlanId: number;
   name: string;
   specs: Record<string, string | number | boolean>;
 };
 
 export type TTariff = {
-  id: string;
-  planId: string; /* Either a TBasePlan or TPlanVariant */
+  id: number;
+  planId: number; /* Either a TBasePlan or TPlanVariant */
   revision: string;
   validFrom: string;
   validTo?: string;

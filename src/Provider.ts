@@ -7,6 +7,7 @@ export const Sector = {
 export type TSector = (typeof Sector)[keyof typeof Sector];
 
 export type TProvider = {
+  id: number;
   sector: TSector[];
   name: string;
   homepage: string;
