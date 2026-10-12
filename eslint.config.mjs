@@ -3,6 +3,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import html from "@html-eslint/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
   // Lint Javascript
@@ -10,6 +11,13 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
+    languageOptions: { globals: globals.browser },
+  },
+
+  // Lint Typescript
+  {
+    files: ["**/*.{ts,tsx,mts,cts}"],
+    extends: [tseslint.configs.recommended],
     languageOptions: { globals: globals.browser },
   },
 

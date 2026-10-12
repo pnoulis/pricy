@@ -23,6 +23,10 @@ NODE_VVERSION			= v$(NODE_VERSION)
 NVM_BIN						= $(HOME)/.nvm/versions/node/$(NODE_VVERSION)/bin
 NPX 							= $(NVM_BIN)/npx
 NODE							= $(NPX) node
+TS_VERSION				= 7.0
+TS_VVERSION				= v$(TS_VERSION)
+TS								= $(NPX) tsc
+TSX								= $(NPX) tsx
 ESBUILD 					= $(NPX) esbuild
 PRETTIER					= $(NPX) prettier
 ESLINT						= $(NPX) eslint
@@ -34,6 +38,7 @@ all: build
 
 .PHONY: build
 build: $(BUILDIR)/index.html
+	$(NODE) esbuild.config.mjs
 
 $(BUILDIR)/index.html: $(SRCDIR)/index.html | $(BUILDIR)/
 	cp $< $@
@@ -50,6 +55,10 @@ watch:
 serve: build
 	$(SERVER) --gzip -c-1 $(BUILDIR)
 
+.PHONY: check
+check:
+	$(TS) --noEmit
+
 .PHONY: format
 format:
 	git diff --cached --name-only | while read -r file; do \
@@ -63,6 +72,6 @@ ARGS ?= # --fix
 lint:
 	git diff --cached --name-only | while read -r file; do \
 		case "$$file" in \
-			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html) \
+			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html|*.mts|*.cts) \
 				[[ -f "$$file" ]] && $(ESLINT) --config eslint.config.mjs $(ARGS) "$$file" ;; \
 		esac; done
