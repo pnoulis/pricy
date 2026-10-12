@@ -1,60 +1,48 @@
 import * as Htmlparser2 from "htmlparser2/WritableStream";
 import type { Writable, Readable } from "node:stream";
-import Fs from "node:fs";
+import { appendLinkedList, createLinkedList } from "#src/LinkedList.ts";
+import type { ILinkedList } from "#src/LinkedList.ts";
+import { createHTMLNode } from "#src/HTMLNode.ts";
+import type { THTMLNode } from "#src/HTMLNode.ts";
 
-const RESOURCE_PATH =
-  "../../../snapshots/telekom/Προγράμματα κινητής GIGAMAX _ Telekom.html";
-const SKU_TARGETS = ["mtb_563", "mtb_570", "mtb_572", "mtb_573", "mtb_574"];
-
-type TPlanMarkup = {
-  raw: string;
-  sku: string;
-  skuTarget: number;
-};
-
-const plan: TPlanMarkup = { raw: "", sku: "", skuTarget: -1 };
-const plans: TPlanMarkup[] = [];
-let isWithinPlan: number = 0;
+const stack: THTMLNode[] = [];
+const plans: ILinkedList<THTMLNode>[] = [];
+let currentNode: THTMLNode;
+let currentPlan: ILinkedList<THTMLNode>;
 
 function isPlanStart(attribs: Record<string, string>) {
   return attribs.class?.startsWith("owl-item");
 }
 
-const parserPlanMarkup: Writable = new Htmlparser2.WritableStream({
-  onopentag(tag: string, attribs: Record<string, string>) {
-    if (!(isPlanStart(attribs) || isWithinPlan)) return;
-    isWithinPlan++;
-    plan.raw += `<${tag}`;
-    for (const [k, v] of Object.entries(attribs)) {
-      plan.raw += ` ${k}=${v}`;
-      if (k !== "data-sku") continue;
-      plan.sku = v;
-      plan.skuTarget = SKU_TARGETS.findIndex((target) => target === v);
+const planMarkupExtractor: Writable = new Htmlparser2.WritableStream({
+  onopentag(name: string, attributes: Record<string, string>) {
+    if (isPlanStart(attributes) && !stack.length) {
+      currentNode = createHTMLNode(name, attributes);
+      currentPlan = createLinkedList(currentNode);
+      plans.push(currentPlan);
+      stack.push(currentNode);
+    } else if (stack.length) {
+      currentNode = createHTMLNode(name, attributes);
+      appendLinkedList(currentPlan, currentNode);
+      stack.push(currentNode);
+      if (isPlanStart(attributes)) {
+        // TODO: Warn of nested plans
+      }
     }
   },
   ontext(text: string) {
-    if (!isWithinPlan) return;
-    plan.raw += text.trim();
+    if (!stack.length) return;
+    currentNode.text += text.trim();
   },
-  onclosetag(tag: string) {
-    if (!isWithinPlan) return;
-    isWithinPlan--;
-    plan.raw += `</${tag}>`;
-    if (isWithinPlan) return;
-    plans.push({ ...plan });
-    plan.raw = "";
-    plan.sku = "";
-    plan.skuTarget = -1;
+  onclosetag() {
+    if (!stack.length) return;
+    stack.pop();
   },
 });
 
-function filterPlanMarkup() {
-  const streamHTML: Readable = Fs.createReadStream(RESOURCE_PATH, {
-    encoding: "utf-8",
-  });
-  streamHTML.pipe(parserPlanMarkup).on("finish", () => {
-    console.log(plans);
-  });
+export function extractPlanMarkup(
+  markupStream: Readable,
+  cb: (plans: ILinkedList<THTMLNode>[]) => void,
+) {
+  markupStream.pipe(planMarkupExtractor).on("finish", () => cb(plans));
 }
-
-filterPlanMarkup();

@@ -17,6 +17,9 @@
     "format": "make format",
     "lint": "make lint"
   },
+  "imports": {
+    "#*": "./*"
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@html-eslint/eslint-plugin": "0.66.1",

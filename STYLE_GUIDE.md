@@ -34,3 +34,4 @@
 
 - Always prefix Types with T
 - Always prefix Enums with E
+- Always prefix Interfaces with I

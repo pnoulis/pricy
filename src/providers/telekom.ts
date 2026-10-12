@@ -1,7 +1,7 @@
 import { Sector } from "../Provider.ts";
 import type { TProvider } from "../Provider.ts";
 import { CustomerSegment, PaymentModel, RateType } from "../Plan.ts";
-import type { TBasePlan, TPlanVariant } from "../Plan.ts";
+import type { TBasePlan, TPlans } from "../Plan.ts";
 
 export const Telekom: TProvider = {
   id: 1,
@@ -10,9 +10,9 @@ export const Telekom: TProvider = {
   homepage: "https://www.telekom.gr",
 };
 
-export const plans = new Map<TBasePlan, TPlanVariant[]>();
+export const plans: TPlans = new Map();
 
-const telekomGigamax: TBasePlan = {
+export const telekomGigamax: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Telecom,
@@ -27,7 +27,7 @@ const telekomGigamax: TBasePlan = {
 };
 plans.set(telekomGigamax, []);
 
-const mobileInternet: TBasePlan = {
+export const mobileInternet: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Telecom,
@@ -42,7 +42,7 @@ const mobileInternet: TBasePlan = {
 };
 plans.set(mobileInternet, []);
 
-const telekomCardContract: TBasePlan = {
+export const telekomCardContract: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Telecom,
@@ -57,7 +57,7 @@ const telekomCardContract: TBasePlan = {
 };
 plans.set(telekomCardContract, []);
 
-const telekomCard: TBasePlan = {
+export const telekomCard: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Telecom,
@@ -72,7 +72,7 @@ const telekomCard: TBasePlan = {
 };
 plans.set(telekomCard, []);
 
-const telekomFiber: TBasePlan = {
+export const telekomFiber: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Broadband,
@@ -102,7 +102,7 @@ const telekom5GWiFiDoublePlay: TBasePlan = {
 };
 plans.set(telekom5GWiFiDoublePlay, []);
 
-const telekom5GWiFi: TBasePlan = {
+export const telekom5GWiFi: TBasePlan = {
   id: plans.size + 1,
   providerId: 1,
   sector: Sector.Broadband,

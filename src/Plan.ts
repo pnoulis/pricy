@@ -102,3 +102,5 @@ export type TTariff = {
   terminationCharge?: TTerminationCharge;
   rates: Record<string, number>;
 };
+
+export type TPlans = Map<TBasePlan, TPlanVariant[]>;
