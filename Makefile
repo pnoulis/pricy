@@ -48,8 +48,7 @@ $(BUILDIR)/:
 
 .PHONY: watch
 watch:
-	make serve &
-	$(NODEMON) --watch $(SRCDIR) -e html,js,css --exec 'make build'
+	$(NODEMON) --watch $(SRCDIR) -e html,js,css,ts --exec 'make build'
 
 .PHONY: serve
 serve: build
