@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+echo "==> Running pre-commit checks..."
+
+echo "==> Type checking..."
+make check
+
+echo "==> Linting..."
+make lint
+
+echo "==> Formatting..."
+make format
+
+echo "==> All pre-commit checks passed."

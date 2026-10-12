@@ -6,7 +6,7 @@ SHELL							= /usr/bin/bash
 .DELETE_ON_ERROR:
 
 # Metadata
-export APPID			= portrai
+export APPID			= pricy
 
 # Build environment
 export SRCDIR_TOP	= .
@@ -36,6 +36,10 @@ SERVER						= $(NPX) http-server
 .PHONY: all
 all: build
 
+.PHONY: setup
+setup:
+	git config --local include.path ../.gitconfig
+
 .PHONY: build
 build: $(BUILDIR)/index.html
 	$(NODE) esbuild.config.mjs
@@ -63,7 +67,10 @@ format:
 	git diff --cached --name-only | while read -r file; do \
 		case "$$file" in \
 			*.json|*.js|*.ts|*.tsx|*.jsx|*.html|*.css|*.mjs|*.cjs) \
-			[[ -f "$$file" ]] && $(PRETTIER) --config prettier.config.mjs --write "$$file"; \
+			if [[ -f "$$file" ]]; then \
+				$(PRETTIER) --config prettier.config.mjs --write "$$file"; \
+				git add "$$file"; \
+			fi \
 		esac; done
 
 .PHONY: lint
