@@ -17,6 +17,12 @@
   Do this: html
   Dont do this: Html
 
+- When an Abbreviation is used as a prefix and must be capitalized (such as when
+  naming classes, types, interfaces, enums, etc) it must always be in uppercase
+
+  Do this: IHTML
+  Dont do this: IHtml or this Ihtml
+
 # Importing Modules
 
 - When importing a third party module (be it one from the standard library or
@@ -35,3 +41,8 @@
 - Always prefix Types with T
 - Always prefix Enums with E
 - Always prefix Interfaces with I
+# Programming Paradigm
+
+- Strong preference for functional or procedural paradigm.
+- Use Object-Oriented model only when the performance cost of not
+  using it would be too great.

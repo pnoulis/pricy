@@ -36,7 +36,10 @@ const planMarkupExtractor: Writable = new Htmlparser2.WritableStream({
   },
   onclosetag() {
     if (!stack.length) return;
-    stack.pop();
+    appendLinkedList(
+      currentPlan,
+      createHTMLNode(stack.pop()!.tag, null, "", true),
+    );
   },
 });
 
