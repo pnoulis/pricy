@@ -29,7 +29,7 @@ export class FilterHTML extends Transform {
       const html = chunk.toString();
       if (this.fragmentStart === -1) {
         this.fragmentStart = this.searchFragment(html);
-        if (this.fragmentStart !== 1) {
+        if (this.fragmentStart !== -1) {
           this.fragmentEnd = this.searchFragment(html, true);
           if (this.fragmentEnd === -1) {
             this.push(html.slice(this.fragmentStart));

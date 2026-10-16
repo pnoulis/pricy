@@ -1,54 +1,57 @@
 #!/usr/bin/env make
 
 # Make configuration
-SHELL							= /usr/bin/bash
+SHELL									= /usr/bin/bash
 .DEFAULT_GOAL: all
 .DELETE_ON_ERROR:
 
 # Metadata
-export APPID			= pricy
+export APPID					= pricy
 
 # Build environment
-export SRCDIR_TOP	= .
-export SRCDIR			= $(SRCDIR_TOP)/src
+export SRCDIR_TOP			= .
+export SRCDIR					= $(SRCDIR_TOP)/src
 
 # Installation directories
-export BUILDIR		= $(SRCDIR_TOP)/build
+export BUILDIR				= $(SRCDIR_TOP)/build
+export prefix					= /usr/local
+export exec_prefix		= ${prefix}
+export localstatedir	= ${prefix}/var
+export pricystatedir	= ${localstatedir}/lib/$(APPID)
+export pricycachedir	= ${localstatedir}/cache/$(APPID)
+installdirs						= $(BUILDIR)/ $(pricystatedir) $(pricycachedir)
 
 # Utilites
-MKDIR_P						= /usr/bin/mkdir -p
-ECMA_VERSION			= es2026
-NODE_VERSION			= 26.11.1
-NODE_VVERSION			= v$(NODE_VERSION)
-NVM_BIN						= $(HOME)/.nvm/versions/node/$(NODE_VVERSION)/bin
-NPX 							= $(NVM_BIN)/npx
-NODE							= $(NPX) node
-TS_VERSION				= 7.0
-TS_VVERSION				= v$(TS_VERSION)
-TS								= $(NPX) tsc
-TSX								= $(NPX) tsx
-ESBUILD 					= $(NPX) esbuild
-PRETTIER					= $(NPX) prettier
-ESLINT						= $(NPX) eslint
-NODEMON						= $(NPX) nodemon
-SERVER						= $(NPX) http-server
+MKDIR_P								= /usr/bin/mkdir -p
+ECMA_VERSION					= es2026
+NODE_VERSION					= 26.11.1
+NODE_VVERSION					= v$(NODE_VERSION)
+NVM_BIN								= $(HOME)/.nvm/versions/node/$(NODE_VVERSION)/bin
+NPX										= $(NVM_BIN)/npx
+NODE									= $(NPX) node
+TS_VERSION						= 7.0
+TS_VVERSION						= v$(TS_VERSION)
+TS										= $(NPX) tsc
+TSX										= $(NPX) tsx
+ESBUILD								= $(NPX) esbuild
+PRETTIER							= $(NPX) prettier
+ESLINT								= $(NPX) eslint
+NODEMON								= $(NPX) nodemon
+SERVER								= $(NPX) http-server
 
 .PHONY: all
 all: build
 
 .PHONY: setup
 setup:
-	git config --local include.path ../.gitconfig
+	git config --local include.path .gitconfig
 
 .PHONY: build
 build: $(BUILDIR)/index.html
 	$(NODE) esbuild.config.mjs
 
-$(BUILDIR)/index.html: $(SRCDIR)/index.html | $(BUILDIR)/
+$(BUILDIR)/index.html: $(SRCDIR)/index.html | $(installdirs)
 	cp $< $@
-
-$(BUILDIR)/:
-	$(MKDIR_P) $@
 
 .PHONY: watch
 watch:
@@ -81,3 +84,6 @@ lint:
 			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html|*.mts|*.cts) \
 				[[ -f "$$file" ]] && $(ESLINT) --config eslint.config.mjs $(ARGS) "$$file"; \
 		esac; done
+
+$(installdirs):
+	$(MKDIR_P) $@

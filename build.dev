@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+buildir_abs="$(pwd)"
+srcdir_top_abs="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+srcdir_top="$(realpath -e --relative-to="$buildir_abs" "$srcdir_top_abs")"
+
+make -C $srcdir_top_abs prefix=$srcdir_top_abs/build
