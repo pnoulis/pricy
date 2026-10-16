@@ -1,7 +1,7 @@
 import Fs from "node:fs";
 import type { Readable } from "node:stream";
 import Path from "node:path";
-import { FilterHTML } from "#src/FilterHTML.ts";
+import { FilterHTML, extractFragmentMain } from "#src/FilterHTML.ts";
 import { Tee } from "#src/Tee.ts";
 
 declare const __CACHEDIR__: string;
@@ -30,12 +30,6 @@ const htmlStream: Readable = Fs.createReadStream(RESOURCE_PATH, {
 });
 
 const path = Path.join(__CACHEDIR__, "telekoGigamax-main.html");
-
-function extractFragmentMain(html: string, lookForTerminal?: boolean): number {
-  if (!lookForTerminal) return html.search(/<main[> ]/);
-  const idx = html.search(/<\/main>/);
-  return idx === -1 ? -1 : idx + 7;
-}
 
 const extractMain = new FilterHTML(extractFragmentMain);
 

@@ -55,3 +55,12 @@ export class FilterHTML extends Transform {
     }
   }
 }
+
+export function extractFragmentMain(
+  html: string,
+  lookForTerminal?: boolean,
+): number {
+  if (!lookForTerminal) return html.search(/<main[> ]/);
+  const idx = html.search(/<\/main>/);
+  return idx === -1 ? -1 : idx + 7;
+}
