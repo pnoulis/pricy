@@ -33,7 +33,7 @@ const path = Path.join(__CACHEDIR__, "telekoGigamax-main.html");
 
 const extractMain = new FilterHTML(extractFragmentMain);
 
-const teeFragment = new Tee(path);
+const teeFragment = new Tee(path, { force: false });
 
 htmlStream
   .pipe(extractMain)
