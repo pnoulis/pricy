@@ -3,6 +3,7 @@ import type { Readable } from "node:stream";
 import Path from "node:path";
 import { FilterHTML, extractFragmentMain } from "#src/FilterHTML.ts";
 import { Tee } from "#src/Tee.ts";
+import { HTMLParser } from "#src/HTMLParser.ts";
 
 declare const __CACHEDIR__: string;
 
@@ -35,33 +36,12 @@ const extractMain = new FilterHTML(extractFragmentMain);
 
 const teeFragment = new Tee(path, { force: false });
 
+const htmlParser = new HTMLParser();
+
 htmlStream
   .pipe(extractMain)
   .pipe(teeFragment)
+  .pipe(htmlParser)
   .on("data", (chunk) => {
-    console.log(chunk.toString());
+    console.log(chunk);
   });
-
-// filter.on("finish", () => {
-//   console.log("completely done");
-//   console.log(filter.fragmentCount);
-// });
-
-// (async () => {
-//   for await (const chunk of filter) {
-//     console.log(chunk.toString());
-//   }
-// })();
-
-// // extractPlanMarkup(markupStream, (plans: ILinkedList<THTMLNode>[]) => {
-// //   // for (const node of plans[0]!) console.log(node);
-// //   // console.log(plans);
-// //   console.log(serializeMarkup(plans[0]!));
-// //   // for (const node of plans[0]!) {
-// //   //   console.log(node);
-// //   // }
-// // });
-
-// // // // Orchestrator function (entry point)
-// // // function compilePlan(plan: TBasePlan) {
-// // // }

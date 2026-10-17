@@ -1,8 +1,10 @@
 import { INode } from "#src/LinkedList.ts";
 
+export type THTMLAttributes = Record<string, string>;
+
 export type THTMLNode = INode & {
   tag: string;
-  attributes: Record<string, string>;
+  attributes: THTMLAttributes;
   text: string;
   isEndTag: boolean;
 };
