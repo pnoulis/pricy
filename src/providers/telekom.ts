@@ -10,6 +10,43 @@ export const Telekom: TProvider = {
   homepage: "https://www.telekom.gr",
 };
 
+const PlanCategory = {
+  "5G WiFi": "5G WiFi",
+  "Business Double Play Plans": "Business Double Play Plans",
+  "Business Email": "Business Email",
+  "Business Telephony": "Business Telephony",
+  "COSMOTE FIBER TO ROOM": "COSMOTE FIBER TO ROOM",
+  "Double Play FTTH - Wizard": "Double Play FTTH - Wizard",
+  "Double Play Fiberspeed up to 200 Mbps":
+    "Double Play Fiberspeed up to 200 Mbps",
+  "Double Play Fiberspeed up to 3Gbps": "Double Play Fiberspeed up to 3Gbps",
+  "Double Play Plans": "Double Play Plans",
+  "Double Play up to 24Mbps": "Double Play up to 24Mbps",
+  "Fixed Plans": "Fixed Plans",
+  "Home Double Play for Holiday House": "Home Double Play for Holiday House",
+  "Home Telephony": "Home Telephony",
+  MagentaTV: "MagentaTV",
+  "MagentaTV + Netflix": "MagentaTV + Netflix",
+  "MagentaTV App offer ": "MagentaTV App offer ",
+  "MagentaTV Business Packs": "MagentaTV Business Packs",
+  "MagentaTV Business Δορυφορικό": "MagentaTV Business Δορυφορικό",
+  "MagentaTV Movies": "MagentaTV Movies",
+  "MagentaTV Rate Plans": "MagentaTV Rate Plans",
+  "MagentaTV Sport Daily Pass": "MagentaTV Sport Daily Pass",
+  "MagentaTV Sports choices": "MagentaTV Sports choices",
+  "Mobile Internet plans": "Mobile Internet plans",
+  "Mobile Plans": "Mobile Plans",
+  "Preconfigured Smartphone Bundle": "Preconfigured Smartphone Bundle",
+  "Preconfigured Tablet Bundle": "Preconfigured Tablet Bundle",
+  Streaming: "Streaming",
+  "Telekom Business Gigamax": "Telekom Business Gigamax",
+  "Telekom Fiber 100": "Telekom Fiber 100",
+  "Telekom Gigamax Plans": "Telekom Gigamax Plans",
+  "Telephony plans": "Telephony plans",
+  Satelite: "Δορυφορικό",
+} as const;
+export type TPlanCategory = (typeof PlanCategory)[keyof typeof PlanCategory];
+
 export const plans: TPlans = new Map();
 
 export const telekomGigamax: TBasePlan = {
@@ -19,8 +56,9 @@ export const telekomGigamax: TBasePlan = {
   segment: CustomerSegment.Consumer,
   paymentModel: PaymentModel.Postpaid,
   rateType: RateType.Fixed,
-  name: "Telekom Gigamax",
+  name: PlanCategory["Telekom Gigamax Plans"],
   sources: [
+    `https://www.telekom.gr/eshop/go/${PlanCategory["Telekom Gigamax Plans"]}`,
     "https://www.telekom.gr/static/residential/en/programmata-kinitis",
     "https://www.telekom.gr/static/residential/el/programmata-kinitis",
   ],
@@ -81,6 +119,7 @@ export const telekomFiber: TBasePlan = {
   rateType: RateType.Fixed,
   name: "Telekom Fiber (Double Play)",
   sources: [
+    "https://www.telekom.gr/eshop/go/Fixed%20Plans",
     "https://www.telekom.gr/static/residential/en/nea-programmata-internet",
     "https://www.telekom.gr/static/residential/el/nea-programmata-internet",
   ],
@@ -96,6 +135,7 @@ const telekom5GWiFiDoublePlay: TBasePlan = {
   rateType: RateType.Fixed,
   name: "Telekom 5G WiFi Double Play",
   sources: [
+    "https://www.telekom.gr/eshop/go/Fixed%20Plans/Double%20Play%20Plans",
     "https://www.telekom.gr/static/residential/en/5g-wifi",
     "https://www.telekom.gr/static/residential/el/5g-wifi",
   ],
@@ -111,6 +151,7 @@ export const telekom5GWiFi: TBasePlan = {
   rateType: RateType.Fixed,
   name: "Telekom 5G WiFi",
   sources: [
+    "https://www.telekom.gr/eshop/go/Fixed%20Plans/5G%20WiFi",
     "https://www.telekom.gr/static/residential/en/5g-wifi",
     "https://www.telekom.gr/static/residential/el/5g-wifi",
   ],

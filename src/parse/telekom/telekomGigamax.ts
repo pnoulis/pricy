@@ -1,1 +1,1 @@
-export function markup2plan() {}
+import type { THTMLToken } from "#src/HTMLParser.ts";
