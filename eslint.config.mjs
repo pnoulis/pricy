@@ -6,19 +6,29 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
+  // Ignore files
+  {
+    ignores: [
+      "dist/**",
+      "build/**",
+      "node_modules/**",
+      "tests/**",
+      "src/browser/firefox-profile.js",
+    ],
+  },
   // Lint Javascript
   {
     files: ["**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 
   // Lint Typescript
   {
     files: ["**/*.{ts,tsx,mts,cts}"],
     extends: [tseslint.configs.recommended],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 
   // Lint HTML

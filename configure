@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+usage() {
+    cat <<EOF
+NAME
+     configure - configure the build environment for pricy
+
+SYNOPSIS
+     configure [OPTION]... [ARGUMENT]...
+
+OPTIONS
+    --dev
+        Configure the project for development work
+
+    --prefix path
+        Set the directory root for derived installation directories
+
+    -h, --help
+        Display usage information and exit
+
+    -v, --version
+        Show program version and exit
+EOF
+}
+
+# User options
+mode=dev
+prefix=/usr/local
+
+main() {
+    set -o errexit
+    # trap cleanup EXIT
+
+    cli_parse_argv "$@"
+
+    cwd="$(pwd)"
+    srcdir_top_abs="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+    srcdir_top="$(realpath -e --relative-to="$cwd" "$srcdir_top_abs")"
+    buildir_abs="${srcdir_top_abs}/build"
+    buildir="build"
+
+    # The path to be included should always be relative to .git
+	  git config --local include.path ../.gitconfig
+
+    case "$mode" in
+        dev)
+            prefix="$buildir_abs"
+            ;;
+        prod)
+            ;;
+        *)
+            echo "[$0] Unexpected mode: $mode"
+            exit 1
+    esac
+
+    m4 -D__SRCDIR_TOP_ABS__="$srcdir_top_abs" \
+       -D__SRCDIR_TOP__="$srcdir_top" \
+       -D__BUILDIR_ABS__="$buildir_abs" \
+       -D__BUILDIR__="$buildir" \
+       -D__PREFIX__="$prefix" \
+       Makefile.in > Makefile
+}
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+fatal() {
+    echo -e "$0: ${RED}[ERROR]${NC} $@" >&2
+    exit 1
+}
+
+warn() {
+    echo -e "$0: ${YELLOW}[WARN]${NC} $@" >&2
+}
+
+info() {
+    echo -e "$0: ${GREEN}[INFO]${NC} $@"
+}
+
+cli_parse_argv() {
+    declare -ga POSARGS=()
+    _param=
+    while (($# > 0)); do
+        case "${1:-}" in
+            --dev)
+                mode='dev'
+                ;;
+            --prefix | --prefix=*)
+                cli_parse_arg "$@" || shift $?
+                prefix="$_param"
+                ;;
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            -[a-zA-Z][a-zA-Z]*)
+                local i="${1:-}"
+                shift
+                local rest="$@"
+                set --
+                for i in $(echo "$i" | grep -o '[a-zA-Z]'); do
+                    set -- "$@" "-$i"
+                done
+                set -- $@ $rest
+                continue
+                ;;
+            --)
+                shift
+                POSARGS+=("$@")
+                ;;
+            -[a-zA-Z]* | --[a-zA-Z]*)
+                fatal "Unrecognized argument ${1:-}"
+                ;;
+            *)
+                POSARGS+=("${1:-}")
+                ;;
+        esac
+        shift
+    done
+    unset _param
+}
+
+cli_parse_arg() {
+    _param=
+    local name value
+    local -i toshift=0
+
+    if (($# == 0)); then
+        return $toshift
+    elif [[ "$1" =~ .*=.* ]]; then
+        name="${1%%=*}"
+        value="${1#*=}"
+    elif [[ "${2-}" =~ ^[^-].+ ]]; then
+        name="$1"
+        value="$2"
+        ((toshift++))
+    fi
+
+    if [[ -z "${value-}" && ! "${OPTIONAL-}" ]]; then
+        fatal "${name:-$1} requires an argument"
+    fi
+
+    _param="${value:-}"
+    return $toshift
+}
+
+main "$@"

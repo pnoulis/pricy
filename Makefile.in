@@ -1,0 +1,124 @@
+#!/usr/bin/env make
+
+# Make configuration
+SHELL													= /usr/bin/bash
+.SHELLFLAGS										= -eu -o pipefail -c
+.DEFAULT_GOAL: all
+.DELETE_ON_ERROR:
+
+# Metadata
+export APPID									= pricy
+
+# Build environment
+export SRCDIR_TOP_ABS					= __SRCDIR_TOP_ABS__
+export SRCDIR_TOP							= __SRCDIR_TOP__
+export BUILDIR_ABS 						= __BUILDIR_ABS__
+export BUILDIR								= __BUILDIR__
+export SRCDIR_ABS 						= $(SRCDIR_TOP_ABS)/src
+export SRCDIR									= $(SRCDIR_TOP)/src
+export TESTSDIR								= $(SRCDIR_TOP_ABS)/tests
+
+# Installation directories
+export prefix									= __PREFIX__
+export exec_prefix						= ${prefix}
+export localstatedir					= ${prefix}/var
+export pricystatedir					= ${localstatedir}/lib/$(APPID)
+export pricycachedir					= ${localstatedir}/cache/$(APPID)
+export pricyfirefoxprofiledir = ${pricystatedir}/firefox
+installdirs										= $(BUILDIR)/ $(pricystatedir) $(pricycachedir) \
+$(pricyfirefoxprofiledir)
+
+# Utilites
+MKDIR_P												= /usr/bin/mkdir -p
+ECMA_VERSION									= es2026
+NODE_VERSION									= 26.11.1
+NODE_VVERSION									= v$(NODE_VERSION)
+NVM_BIN												= $(HOME)/.nvm/versions/node/$(NODE_VVERSION)/bin
+NPX														= $(NVM_BIN)/npx
+export NPM										= $(NVM_BIN)/npm
+NODE													= $(NVM_BIN)/node
+TS_VERSION										= 7.0
+TS_VVERSION										= v$(TS_VERSION)
+TS														= $(NPX) tsc
+TSX														= $(NPX) tsx
+ESBUILD												= $(NPX) esbuild
+PRETTIER											= $(NPX) prettier
+ESLINT												= $(NPX) eslint
+NODEMON												= $(NPX) nodemon
+SERVER												= $(NPX) http-server
+export WEBDRIVER_PORT					= 9222
+export WEBDRIVER_URL					= ws://localhost:$(WEBDRIVER_PORT)/session
+export FIREFOX								= /usr/bin/firefox-esr
+
+# Build targets
+FIREFOX_PROFILE_SRC						= $(SRCDIR)/browser/firefox-profile.js
+FIREFOX_PROFILE_OUT						= $(pricyfirefoxprofiledir)/user.js
+TSFILES_SRC										= $(shell find $(SRCDIR) -name '*.ts')
+TSFILES_OUT 									= $(patsubst $(SRCDIR)/%.ts,$(BUILDIR)/%.js,$(TSFILES_SRC))
+
+.PHONY: all
+all: build
+
+.PHONY: build
+build: $(BUILDIR)/index.html browser-infra $(TSFILES_OUT)
+
+$(BUILDIR)/%.js: $(SRCDIR)/%.ts $(SRCDIR_TOP)/esbuild.config.mjs
+	$(NODE) $(SRCDIR_TOP)/esbuild.config.mjs $< $@
+
+$(BUILDIR)/index.html: $(SRCDIR)/index.html | $(installdirs)
+	cp $< $@
+
+browser-infra: $(FIREFOX_PROFILE_OUT)
+
+$(FIREFOX_PROFILE_OUT): $(FIREFOX_PROFILE_SRC) | $(installdirs)
+	cp $< $@
+
+.PHONY: run
+ARGS ?= # files to execute within build environment
+run:
+	$(NODE) $(BUILDIR)/$(ARGS)
+
+.PHONY: test
+test: build
+	$(NODE) tests/index.js
+
+.PHONY: watch
+watch:
+	$(NODEMON) --watch $(SRCDIR) -e html,js,css,ts --exec 'make build'
+
+.PHONY: serve
+serve: build
+	$(SERVER) --gzip -c-1 $(BUILDIR)
+
+.PHONY: check
+check:
+	$(TS) --noEmit
+
+.PHONY: format
+format:
+	git diff --cached --name-only --diff-filter=d | while read -r file; do \
+		case "$$file" in \
+			*.json|*.js|*.ts|*.tsx|*.jsx|*.html|*.css|*.mjs|*.cjs) \
+			if [[ -f "$$file" ]]; then \
+				$(PRETTIER) --config $(SRCDIR_TOP)/prettier.config.mjs --write "$$file"; \
+				git add "$$file"; \
+			fi \
+		esac; done;
+
+.PHONY: lint
+ARGS ?= # --fix
+lint:
+	git diff --cached --name-only --diff-filter=d | while read -r file; do \
+		case "$$file" in \
+			*.js|*.ts|*.jsx|*.tsx|*.mjs|*.cjs|*.html|*.mts|*.cts) \
+				[[ -f "$$file" ]] && $(ESLINT) --config $(SRCDIR_TOP)/eslint.config.mjs \
+				--no-warn-ignored \
+				$(ARGS) "$$file"; \
+		esac; done;
+
+$(installdirs):
+	$(MKDIR_P) $@
+
+clean:
+	rm -fr $(BUILDIR)
+	rm Makefile
