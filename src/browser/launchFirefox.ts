@@ -19,6 +19,9 @@ export async function launchFirefox(): Promise<string> {
         firefox = ChildProcess.spawn(isString(process.env.FIREFOX), flags, {
           cwd: process.env.HOME,
         });
+        firefox.stdin!.on("data", (chunk) => console.log(chunk.toString()));
+        firefox.stderr!.on("data", (chunk) => console.log(chunk.toString()));
+        firefox.stdout!.on("data", (chunk) => console.log(chunk.toString()));
         firefox.on("error", reject);
         firefox.on("close", () => console.log("Firefox closed!"));
         firefox.on("spawn", () => {
@@ -43,7 +46,12 @@ export async function launchFirefox(): Promise<string> {
             console.log("SIGUSR2 -> Firefox closing!");
             firefox!.kill();
           });
-          resolve(isString(process.env.WEBDRIVER_URL));
+
+          // The BiDi server is not initialized as soon as the process is
+          // spawned causing connectinos to fail. One solution is to delay the
+          // fulfillment for a few seconds
+          // TODO: Validate this issue is indeed caused by delay
+          setTimeout(() => resolve(isString(process.env.WEBDRIVER_URL)), 3000);
         });
       });
 }

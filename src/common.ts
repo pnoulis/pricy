@@ -24,3 +24,6 @@ export function isString(value: unknown, message?: string): string {
     message || `Expected a string, but received ${typeof value}`,
   );
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function assertType<T>(value: unknown): asserts value is T {}

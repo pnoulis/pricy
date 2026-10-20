@@ -26,6 +26,7 @@
     "@eslint/js": "10.0.1",
     "@html-eslint/eslint-plugin": "0.66.1",
     "@types/node": "26.6.5",
+    "@types/ws": "^8.18.2",
     "create-next-app": "16.4.2",
     "esbuild": "0.28.2",
     "eslint": "10.12.0",
@@ -33,13 +34,19 @@
     "globals": "17.13.0",
     "http-server": "14.1.1",
     "nodemon": "3.1.14",
+    "prettier": "3.9.10",
     "typescript": "6.0.2",
     "typescript-eslint": "8.71.1"
   },
   "allowScripts": {
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "bufferutil@4.1.0": true
   },
   "dependencies": {
-    "htmlparser2": "12.0.0"
+    "htmlparser2": "12.0.0",
+    "ws": "8.22.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "4.1.0"
   }
 }

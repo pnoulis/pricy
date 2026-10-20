@@ -75,7 +75,7 @@ $(FIREFOX_PROFILE_OUT): $(FIREFOX_PROFILE_SRC) | $(installdirs)
 
 .PHONY: run
 ARGS ?= # files to execute within build environment
-run:
+run: build
 	$(NODE) $(BUILDIR)/$(ARGS)
 
 .PHONY: test

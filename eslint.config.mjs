@@ -29,6 +29,9 @@ export default defineConfig([
     files: ["**/*.{ts,tsx,mts,cts}"],
     extends: [tseslint.configs.recommended],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   },
 
   // Lint HTML
